@@ -1,5 +1,6 @@
 package com.example.yahtzeeextreme
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,19 +30,18 @@ class YahtzeeGameViewModel : ViewModel() {
         _locked.value = List(5) { false }
         _attemptsLeft.value = 3
         _scoreboard.value = mapOf( //dit is om scores bij te houden zie hierbove
-            "ones" to 0,
-            "twos" to 0,
-            "threes" to 0,
-            "fours" to 0,
-            "fives" to 0,
-            "sixes" to 0,
-            "threeOfKind" to 0,
-            "fourOfKind" to 0,
-            "fullHouse" to 0,
-            "smallStraight" to 0,
-            "largeStraight" to 0,
-            "yahtzee" to 0,
-            "chance" to 0
+            "ones" to null,
+            "twos" to null,
+            "threes" to null,
+            "fives" to null,
+            "sixes" to null,
+            "threeOfKind" to null,
+            "fourOfKind" to null,
+            "fullHouse" to null,
+            "smallStraight" to null,
+            "largeStraight" to null,
+            "yahtzee" to null,
+            "chance" to null
         )
     }
     fun roll() {
@@ -51,8 +51,7 @@ class YahtzeeGameViewModel : ViewModel() {
         _dice.value = newDice
         _attemptsLeft.value = _attemptsLeft.value?.minus(1)
         if (_attemptsLeft.value == 0) {
-            _locked.value =
-                List(5) { true } // als al uw beurten om zijn blijven de dobbelstenen hoe ze nu zijn
+            _locked.value = List(5) { true } // Lock all dice if no attempts left
         }
     }
 
@@ -79,22 +78,15 @@ class YahtzeeGameViewModel : ViewModel() {
     }
 
     //scoring
-    fun doScore(ruleName: String) {
+    fun doScore(ruleName: String, currentDiceValues: IntArray) {
         val currentScores = _scoreboard.value?.toMutableMap()
         val score = when (ruleName) {
-            "ones" -> scoreOnes()
-            "twos" -> scoreTwos()
-            "threes" -> scoreThrees()
-            "fours" -> scoreFours()
-            "fives" -> scoreFives()
-            "sixes" -> scoreSixes()
-            "threeOfKind" -> scoreThreeOfAKind()
-            "fourOfKind" -> scoreFourOfAKind()
-            "fullHouse" -> scoreFullHouse()
-            "smallStraight" -> scoreSmallStraight()
-            "largeStraight" -> scoreLargeStraight()
-            "yahtzee" -> scoreYahtzee()
-            "chance" -> scoreChance()
+            "ones" -> scoreOnes(currentDiceValues)
+            "twos" -> scoreTwos(currentDiceValues)
+            "threes" -> scoreThrees(currentDiceValues)
+            "fours" -> scoreFours(currentDiceValues)
+            "fives" -> scoreFives(currentDiceValues)
+            "sixes" -> scoreSixes(currentDiceValues)
             else -> null
         }
         currentScores?.set(ruleName, score)
@@ -103,17 +95,94 @@ class YahtzeeGameViewModel : ViewModel() {
     }
 
     //scoring rules
-    private fun scoreOnes() = scoreSpecificNumber(1)
-    private fun scoreTwos() = scoreSpecificNumber(2)
-    private fun scoreThrees() = scoreSpecificNumber(3)
-    private fun scoreFours() = scoreSpecificNumber(4)
-    private fun scoreFives() = scoreSpecificNumber(5)
-    private fun scoreSixes() = scoreSpecificNumber(6)
-
-    private fun scoreSpecificNumber(number: Int): Int {
-        return _dice.value?.count { it == number }?.times(number) ?: 0
+    fun scoreOnes(currentDiceValues: IntArray): Int? {
+        if (_scoreboard.value?.get("ones") == null) { // Check if the score for "ones" is already filled
+            val scoreNeeded = scoreSpecificNumber(currentDiceValues, 1) // Calculate the score for ones
+            val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
+            currentScores["ones"] = scoreNeeded // Update the score for ones
+            _scoreboard.value = currentScores // This should trigger the observer
+            Log.d("YahtzeeGameViewModel", "Score for ones updated to: $scoreNeeded")
+            return scoreNeeded // Ensure you return the score
+        } else {
+            return null // Return null if already filled
+        }
+    }
+    // Helper function to calculate the score for a specific number
+    private fun scoreSpecificNumber(currentDiceValues: IntArray, number: Int): Int {
+        return currentDiceValues.count { it == number } * number // Count occurrences of the number and multiply by the number
+    }
+    fun scoreTwos(currentDiceValues: IntArray): Int?{
+        if (_scoreboard.value?.get("twos") == null) { // Check if the score for "ones" is already filled
+            val scoreNeeded = scoreSpecificNumber(currentDiceValues, 2) // Calculate the score for ones
+            val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
+            currentScores["twos"] = scoreNeeded // Update the score for ones
+            _scoreboard.value = currentScores // This should trigger the observer
+            Log.d("YahtzeeGameViewModel", "Score for ones updated to: $scoreNeeded")
+            return scoreNeeded // Ensure you return the score
+        } else {
+            return null // Return null if already filled
+        }
+    }
+    fun scoreThrees(currentDiceValues: IntArray): Int?{
+        if (_scoreboard.value?.get("threes") == null) { // Check if the score for "ones" is already filled
+            val scoreNeeded = scoreSpecificNumber(currentDiceValues, 3) // Calculate the score for ones
+            val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
+            currentScores["threes"] = scoreNeeded // Update the score for ones
+            _scoreboard.value = currentScores // This should trigger the observer
+            Log.d("YahtzeeGameViewModel", "Score for ones updated to: $scoreNeeded")
+            return scoreNeeded // Ensure you return the score
+        } else {
+            return null // Return null if already filled
+        }
+    }
+    fun scoreFours(currentDiceValues: IntArray): Int?{
+        if (_scoreboard.value?.get("fours") == null) { // Check if the score for "ones" is already filled
+            val scoreNeeded = scoreSpecificNumber(currentDiceValues, 4) // Calculate the score for ones
+            val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
+            currentScores["fours"] = scoreNeeded // Update the score for ones
+            _scoreboard.value = currentScores // This should trigger the observer
+            Log.d("YahtzeeGameViewModel", "Score for ones updated to: $scoreNeeded")
+            return scoreNeeded // Ensure you return the score
+        } else {
+            return null // Return null if already filled
+        }
+    }
+    fun scoreFives(currentDiceValues: IntArray): Int?{
+        if (_scoreboard.value?.get("fives") == null) { // Check if the score for "ones" is already filled
+            val scoreNeeded = scoreSpecificNumber(currentDiceValues, 5) // Calculate the score for ones
+            val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
+            currentScores["fives"] = scoreNeeded // Update the score for ones
+            _scoreboard.value = currentScores // This should trigger the observer
+            Log.d("YahtzeeGameViewModel", "Score for ones updated to: $scoreNeeded")
+            return scoreNeeded // Ensure you return the score
+        } else {
+            return null // Return null if already filled
+        }
+    }
+    fun scoreSixes(currentDiceValues: IntArray): Int?{
+        if (_scoreboard.value?.get("sixes") == null) { // Check if the score for "ones" is already filled
+            val scoreNeeded = scoreSpecificNumber(currentDiceValues, 6) // Calculate the score for ones
+            val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
+            currentScores["sixes"] = scoreNeeded // Update the score for ones
+            _scoreboard.value = currentScores // This should trigger the observer
+            Log.d("YahtzeeGameViewModel", "Score for ones updated to: $scoreNeeded")
+            return scoreNeeded // Ensure you return the score
+        } else {
+            return null // Return null if already filled
+        }
     }
 
+    private fun updateScore(ruleName: String, score: Int?) {
+        val currentScores = _scoreboard.value?.toMutableMap()
+        currentScores?.set(ruleName, score)
+        _scoreboard.value = currentScores
+    }
+
+    private fun scoreSpecificNumber(number: Int): Int {
+        val count = _dice.value?.count { it == number } ?: 0
+        Log.d("YahtzeeGameViewModel", "Count of $number in dice: $count")
+        return count * number
+    }
     private fun scoreThreeOfAKind(): Int? {
         return if (hasNOfAKind(3)) _dice.value?.sum() else 0
     }
