@@ -67,7 +67,9 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="Player 1"
-                android:textColor="#000000" />
+                android:textColor="#000000"
+                android:background="#40000000"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="195dp"
@@ -191,6 +193,7 @@
 
         <TableRow>
             <TextView
+                android:id="@+id/Ones"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -198,10 +201,13 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/OnesScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:gravity="end"/>
             <TextView
+                android:id="@+id/ThreeOfKind"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -209,6 +215,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/ThreeOfKindScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -219,6 +226,7 @@
         </TableRow>
         <TableRow>
             <TextView
+                android:id="@+id/Twos"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -226,6 +234,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/TwosScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -233,6 +242,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/FourOfKind"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -240,12 +250,15 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/FourOfKindScore"
                 android:layout_width="0dp"
+                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
         </TableRow>
         <TableRow>
             <TextView
+                android:id="@+id/Threes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -253,6 +266,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/ThreesScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -260,6 +274,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/FullHouse"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -267,12 +282,15 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/FullHouseScore"
                 android:layout_width="0dp"
+                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
         </TableRow>
         <TableRow>
             <TextView
+                android:id="@+id/Fours"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -280,10 +298,13 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/FoursScore"
                 android:layout_width="0dp"
+                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
             <TextView
+                android:id="@+id/SmallStraight"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -291,6 +312,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/SmallStraightScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -300,6 +322,7 @@
         </TableRow>
         <TableRow>
             <TextView
+                android:id="@+id/Fives"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -307,10 +330,13 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/FivesScore"
                 android:layout_width="0dp"
+                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
             <TextView
+                android:id="@+id/LargeStraight"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -318,6 +344,7 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/LargeStraightScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -327,6 +354,7 @@
         </TableRow>
         <TableRow>
             <TextView
+                android:id="@+id/Sixes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -334,10 +362,13 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/SixesScore"
                 android:layout_width="0dp"
+                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
             <TextView
+                android:id="@+id/Chance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -345,6 +376,28 @@
                 android:padding="8dp"
                 android:textColor="#000000" />
             <TextView
+                android:id="@+id/ChanceScore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:padding="8dp"
+                android:textColor="#000000" />
+        </TableRow>
+        <TableRow>
+            <TextView />
+            <TextView />
+            <TextView
+                android:id="@+id/Yahtzee"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Yahtzee"
+                android:gravity="end"
+                android:padding="8dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/YahtzeeScore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

@@ -10,7 +10,8 @@ class YahtzeeGameViewModel : ViewModel() {
     private val _dice = MutableLiveData<List<Int>>()
     val dice: LiveData<List<Int>> get() = _dice
 
-    private val _locked = MutableLiveData<List<Boolean>>() //dit is dus om de dobbelstenen te laten hoe ze zijn als alle beurten om zijn om te rerollen
+    private val _locked =
+        MutableLiveData<List<Boolean>>() //dit is dus om de dobbelstenen te laten hoe ze zijn als alle beurten om zijn om te rerollen
     val locked: LiveData<List<Boolean>> get() = _locked
 
     private val _attemptsLeft = MutableLiveData<Int>()
@@ -28,19 +29,19 @@ class YahtzeeGameViewModel : ViewModel() {
         _locked.value = List(5) { false }
         _attemptsLeft.value = 3
         _scoreboard.value = mapOf( //dit is om scores bij te houden zie hierbove
-            "ones" to null,
-            "twos" to null,
-            "threes" to null,
-            "fours" to null,
-            "fives" to null,
-            "sixes" to null,
-            "threeOfKind" to null,
-            "fourOfKind" to null,
-            "fullHouse" to null,
-            "smallStraight" to null,
-            "largeStraight" to null,
-            "yahtzee" to null,
-            "chance" to null
+            "ones" to 0,
+            "twos" to 0,
+            "threes" to 0,
+            "fours" to 0,
+            "fives" to 0,
+            "sixes" to 0,
+            "threeOfKind" to 0,
+            "fourOfKind" to 0,
+            "fullHouse" to 0,
+            "smallStraight" to 0,
+            "largeStraight" to 0,
+            "yahtzee" to 0,
+            "chance" to 0
         )
     }
     fun roll() {
@@ -50,7 +51,8 @@ class YahtzeeGameViewModel : ViewModel() {
         _dice.value = newDice
         _attemptsLeft.value = _attemptsLeft.value?.minus(1)
         if (_attemptsLeft.value == 0) {
-            _locked.value = List(5) { true } // als al uw beurten om zijn blijven de dobbelstenen hoe ze nu zijn
+            _locked.value =
+                List(5) { true } // als al uw beurten om zijn blijven de dobbelstenen hoe ze nu zijn
         }
     }
 
@@ -75,4 +77,103 @@ class YahtzeeGameViewModel : ViewModel() {
     fun anyUnlocked(): Boolean {
         return _locked.value?.contains(false) == true
     }
+
+    //scoring
+    fun doScore(ruleName: String) {
+        val currentScores = _scoreboard.value?.toMutableMap()
+        val score = when (ruleName) {
+            "ones" -> scoreOnes()
+            "twos" -> scoreTwos()
+            "threes" -> scoreThrees()
+            "fours" -> scoreFours()
+            "fives" -> scoreFives()
+            "sixes" -> scoreSixes()
+            "threeOfKind" -> scoreThreeOfAKind()
+            "fourOfKind" -> scoreFourOfAKind()
+            "fullHouse" -> scoreFullHouse()
+            "smallStraight" -> scoreSmallStraight()
+            "largeStraight" -> scoreLargeStraight()
+            "yahtzee" -> scoreYahtzee()
+            "chance" -> scoreChance()
+            else -> null
+        }
+        currentScores?.set(ruleName, score)
+        _scoreboard.value = currentScores
+        resetGameState()
+    }
+
+    //scoring rules
+    private fun scoreOnes() = scoreSpecificNumber(1)
+    private fun scoreTwos() = scoreSpecificNumber(2)
+    private fun scoreThrees() = scoreSpecificNumber(3)
+    private fun scoreFours() = scoreSpecificNumber(4)
+    private fun scoreFives() = scoreSpecificNumber(5)
+    private fun scoreSixes() = scoreSpecificNumber(6)
+
+    private fun scoreSpecificNumber(number: Int): Int {
+        return _dice.value?.count { it == number }?.times(number) ?: 0
+    }
+
+    private fun scoreThreeOfAKind(): Int? {
+        return if (hasNOfAKind(3)) _dice.value?.sum() else 0
+    }
+
+    private fun scoreFourOfAKind(): Int? {
+        return if (hasNOfAKind(4)) _dice.value?.sum() else 0
+    }
+
+    private fun scoreFullHouse(): Int? {
+        //als er 3 van 1 soort cijfers gegooid worden en 2 van een andere soort
+        val counts = _dice.value?.groupingBy { it }?.eachCount() ?: return 0
+
+        return if (counts.size == 2) {
+            when {
+                counts.any { it.value == 3 } && counts.any { it.value == 2 } -> 25
+                else -> 0
+            }
+        } else {
+            0
+        }
+    }
+    private fun scoreSmallStraight(): Int? {
+        //als er 4 opvolgende cijfers gegooid worden
+        val uniqueValues = _dice.value?.distinct() ?: return 0
+        return if ((uniqueValues.contains(1) && uniqueValues.contains(2) && uniqueValues.contains(3) && uniqueValues.contains(4)) ||
+            (uniqueValues.contains(2) && uniqueValues.contains(3) && uniqueValues.contains(4) && uniqueValues.contains(5)) ||
+            (uniqueValues.contains(3) && uniqueValues.contains(4) && uniqueValues.contains(5) && uniqueValues.contains(6))) {
+            30
+        } else {
+            0
+        }
+    }
+
+    private fun scoreLargeStraight(): Int? {
+        // als er 5 opvolgende cijfers gegooid worden
+        val uniqueValues = _dice.value?.distinct() ?: return 0
+        return if ((uniqueValues.contains(1) && uniqueValues.contains(2) && uniqueValues.contains(3) && uniqueValues.contains(4) && uniqueValues.contains(5)) ||
+            (uniqueValues.contains(2) && uniqueValues.contains(3) && uniqueValues.contains(4) && uniqueValues.contains(5) && uniqueValues.contains(6))) {
+            40
+        } else {
+            0
+        }
+    }
+
+    private fun scoreYahtzee(): Int? {
+        //als er 5 dezelfde nummers gegooid worden
+        return if (hasNOfAKind(5)) {
+            50
+        } else {
+            0
+        }
+    }
+
+    private fun scoreChance(): Int {
+        //som van alle cijfers
+        return _dice.value?.sum() ?: 0
+    }
+    private fun hasNOfAKind(n: Int): Boolean {
+        val counts = _dice.value?.groupingBy { it }?.eachCount() ?: return false
+        return counts.any { it.value >= n }
+    }
+
 }

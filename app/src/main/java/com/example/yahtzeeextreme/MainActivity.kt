@@ -31,10 +31,19 @@ class MainActivity : ComponentActivity() {
         R.drawable.dobbelsteenlocked5,
         R.drawable.dobbelsteenlocked6,
     )
+    private val scoreCategories = mapOf( //dit nodig om mijn scorebord up te daten
+        "ones" to R.id.Ones,
+        "twos" to R.id.Twos,
+        "threes" to R.id.Threes,
+        "fours" to R.id.Fours,
+        "fives" to R.id.Fives,
+        "sixes" to R.id.Sixes
+    )
 
     private var diceValues = IntArray(5) { 1 }
     private var attemptsleft = 3
     private var lockedDice = BooleanArray(5) { false }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +73,7 @@ class MainActivity : ComponentActivity() {
         diceMiddle.setOnClickListener { toggleDiceLock(2, diceMiddle) }
         diceBottomLeft.setOnClickListener { toggleDiceLock(3, diceBottomLeft) }
         diceBottomRight.setOnClickListener { toggleDiceLock(4, diceBottomRight) }
+
     }
 
 
@@ -100,5 +110,9 @@ class MainActivity : ComponentActivity() {
             diceImageView.setImageResource(diceImages[diceValues[index] - 1])
         }
     }
+
+    //scorebord
+
+
 }
 
