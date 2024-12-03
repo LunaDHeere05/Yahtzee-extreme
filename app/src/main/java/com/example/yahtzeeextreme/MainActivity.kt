@@ -73,6 +73,8 @@ class MainActivity : ComponentActivity() {
                 diceValues[i] = Random.nextInt(1, 7)
             }
         }
+        lockedDice.fill(false); //dit zorgt ervoor dat telkens als er gerollt wordt dat het ni meer lockt is.
+                                        //bij elke roll moet je dus opnieuw locked dice aangeven.
         updateDiceImages()
     }
 
