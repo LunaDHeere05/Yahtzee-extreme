@@ -3,6 +3,7 @@ package com.example.yahtzeeextreme
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlin.random.Random
 
 class YahtzeeGameViewModel : ViewModel() {
 
@@ -41,5 +42,37 @@ class YahtzeeGameViewModel : ViewModel() {
             "yahtzee" to null,
             "chance" to null
         )
+    }
+    fun roll() {
+        val newDice = _dice.value?.mapIndexed { index, value ->
+            if (_locked.value?.get(index) == true) value else Random.nextInt(1, 7)
+        }
+        _dice.value = newDice
+        _attemptsLeft.value = _attemptsLeft.value?.minus(1)
+        if (_attemptsLeft.value == 0) {
+            _locked.value = List(5) { true } // als al uw beurten om zijn blijven de dobbelstenen hoe ze nu zijn
+        }
+    }
+
+    fun toggleLocked(idx: Int) {
+        val newLocked = _locked.value?.toMutableList()
+        newLocked?.set(idx, !(newLocked[idx]))
+        _locked.value = newLocked
+    }
+
+    fun doScore(ruleName: String, ruleFn: (List<Int>) -> Int?) {
+        val currentScores = _scoreboard.value?.toMutableMap()
+        currentScores?.set(ruleName, ruleFn(_dice.value!!))
+        _scoreboard.value = currentScores
+        resetGameState()
+    }
+
+    private fun resetGameState() {
+        _attemptsLeft.value = 3
+        _locked.value = List(5) { false }
+    }
+
+    fun anyUnlocked(): Boolean {
+        return _locked.value?.contains(false) == true
     }
 }
