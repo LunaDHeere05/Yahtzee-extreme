@@ -28,16 +28,7 @@ class MainActivity : ComponentActivity() {
         R.drawable.dobbelsteenlocked5,
         R.drawable.dobbelsteenlocked6,
     )
-    private val scoreCategories = mapOf( //dit nodig om mijn scorebord up te daten
-        "ones" to R.id.Ones,
-        "twos" to R.id.Twos,
-        "threes" to R.id.Threes,
-        "fours" to R.id.Fours,
-        "fives" to R.id.Fives,
-        "sixes" to R.id.Sixes
-    )
-
-    private var diceValues = IntArray(5) { 1 }
+    private var diceValues = IntArray(5) { Random.nextInt(1,7) }
     private var attemptsleft = 3
     private var lockedDice = BooleanArray(5) { false }
 
@@ -50,25 +41,57 @@ class MainActivity : ComponentActivity() {
         val view = binding.root
         setContentView(view)
 
-        // Observe the scores LiveData to update the scoreboard
         gameViewModel.scores.observe(this) { scores ->
-            updateScoreboard(scores) // Pass the scores to the updateScoreboard function
+            updateScoreboard(scores)
         }
 
         updateDiceImages()
         updateRollInfo()
 
         binding.Ones.setOnClickListener {
-            println("button not clicked yet")
-            gameViewModel.doScore("ones", currentDiceValues) // Pass the updated currentDiceValues
-            println("button clicked")
+            gameViewModel.doScore("ones", currentDiceValues)
         }
         binding.Twos.setOnClickListener {
-            println("button not clicked yet")
-            gameViewModel.doScore("twos", currentDiceValues) // Pass the updated currentDiceValues
-            println("button clicked")
+            gameViewModel.doScore("twos", currentDiceValues)
+        }
+        binding.Threes.setOnClickListener {
+            gameViewModel.doScore("threes", currentDiceValues)
+        }
+        binding.Fours.setOnClickListener {
+            gameViewModel.doScore("fours", currentDiceValues)
+        }
+        binding.Fives.setOnClickListener {
+            gameViewModel.doScore("fives", currentDiceValues)
+        }
+        binding.Sixes.setOnClickListener {
+            gameViewModel.doScore("sixes", currentDiceValues)
+        }
+        binding.ThreeOfKind.setOnClickListener{
+            gameViewModel.doScore("threeOfKind", currentDiceValues)
+        }
+        binding.FourOfKind.setOnClickListener{
+            gameViewModel.doScore("fourOfKind", currentDiceValues)
         }
 
+        binding.FullHouse.setOnClickListener{
+            gameViewModel.doScore("fullHouse", currentDiceValues)
+        }
+
+        binding.SmallStraight.setOnClickListener{
+            gameViewModel.doScore("smallStraight", currentDiceValues)
+        }
+
+        binding.LargeStraight.setOnClickListener{
+            gameViewModel.doScore("largeStraight", currentDiceValues)
+        }
+
+        binding.Chance.setOnClickListener{
+            gameViewModel.doScore("chance", currentDiceValues)
+        }
+
+        binding.Yahtzee.setOnClickListener{
+            gameViewModel.doScore("yahtzee", currentDiceValues)
+        }
 
         binding.shakeToRollButton.setOnClickListener { //momenteel click listener wnt moet nog uitzoeken hoe ik da een shake ding maak
             if (attemptsleft > 0) {
@@ -123,17 +146,47 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateScoreboard(scores: Map<String, Int?>) {
-        // Update the OnesScore TextView with the current score for "ones"
         val onesScore = scores["ones"] ?: 0
         binding.OnesScore.text = onesScore.toString()
 
-        // Update the TwosScore TextView with the current score for "twos"
         val twosScore = scores["twos"] ?: 0
         binding.TwosScore.text = twosScore.toString()
 
-        // Add additional fields as necessary
+        val threeScore = scores["threes"] ?: 0
+        binding.ThreesScore.text = threeScore.toString()
+
+        val fourScore = scores["fours"] ?: 0
+        binding.FoursScore.text = fourScore.toString()
+
+        val fiveScore = scores["fives"] ?: 0
+        binding.FivesScore.text = fiveScore.toString()
+
+        val sixScore = scores["sixes"] ?: 0
+        binding.SixesScore.text = sixScore.toString()
+
+        val threeOfKindScore = scores["threeOfKind"] ?: 0
+        binding.ThreeOfKindScore.text = threeOfKindScore.toString()
+
+        val fourOfKindScore = scores["fourOfKind"] ?: 0
+        binding.FourOfKindScore.text = fourOfKindScore.toString()
+
+        val fullHouseScore = scores["fullHouse"] ?: 0
+        binding.FullHouseScore.text = fullHouseScore.toString()
+
+        val smallStraight = scores["smallStraight"] ?: 0
+        binding.SmallStraightScore.text = smallStraight.toString()
+
+        val largeStraight = scores["largeStraight"] ?: 0
+        binding.LargeStraightScore.text = largeStraight.toString()
+
+        val chance = scores["chance"] ?: 0
+        binding.ChanceScore.text = chance.toString()
+
+        val yahtzee = scores["yahtzee"] ?: 0
+        binding.YahtzeeScore.text = yahtzee.toString()
+
+
     }
-    //scorebord
 
 
 }
