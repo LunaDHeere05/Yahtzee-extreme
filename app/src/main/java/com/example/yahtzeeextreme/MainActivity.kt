@@ -8,8 +8,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import com.example.yahtzeeextreme.databinding.ActivityMainBinding
 import kotlin.random.Random
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), SensorEventListener {
 
 
     private val gameViewModel: YahtzeeGameViewModel by viewModels()
@@ -35,15 +39,25 @@ class MainActivity : ComponentActivity() {
     private val currentDiceValues = IntArray(5)
     private lateinit var binding: ActivityMainBinding
 
+    //shake to roll
+
+    private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
+    private var lastUpdate: Long = 0
+    private var last_x: Float = 0f
+    private var last_y: Float = 0f
+    private var last_z: Float = 0f
+    private val SHAKE_THRESHOLD = 1500
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-        gameViewModel.scores.observe(this) { scores ->
-            updateScoreboard(scores)
-        }
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
 
         updateDiceImages()
         updateRollInfo()
@@ -109,6 +123,57 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    //shake to roll
+    override fun onResume() {
+        super.onResume()
+        // Register the sensor listener
+        accelerometer?.let { acc ->
+            sensorManager.registerListener(this, acc, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Unregister the sensor listener
+        sensorManager.unregisterListener(this)
+    }
+
+
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event != null) {
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
+            val curTime = System.currentTimeMillis()
+
+            // Only allow one update every 100ms
+            if ((curTime - lastUpdate) > 100) {
+                val diffTime = (curTime - lastUpdate)
+                lastUpdate = curTime
+
+                val speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000
+
+                if (speed > SHAKE_THRESHOLD) {
+                    // Shake detected, roll the dice
+                    if (attemptsleft > 0) {
+                        rollDice()
+                        attemptsleft--
+                        updateRollInfo()
+                    }
+                }
+
+                last_x = x
+                last_y = y
+                last_z = z
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    }
+
+    //functie om dice te rollen
 
     private fun rollDice() {
         for (i in diceValues.indices) {
