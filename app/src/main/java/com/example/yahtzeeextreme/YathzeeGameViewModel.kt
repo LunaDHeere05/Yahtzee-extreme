@@ -42,11 +42,6 @@ class YahtzeeGameViewModel : ViewModel() {
         )
     }
 
-    private fun resetGameState() {
-        _attemptsLeft.value = 3
-        _locked.value = List(5) { false }
-    }
-
     //scoring
     fun doScore(ruleName: String, currentDiceValues: IntArray) {
         val currentScores = _scoreboard.value?.toMutableMap()
@@ -75,6 +70,11 @@ class YahtzeeGameViewModel : ViewModel() {
 
     private fun scoreSpecificNumber(currentDiceValues: IntArray, number: Int): Int {
         return currentDiceValues.count { it == number } * number
+    }
+
+    fun resetGameState() {
+        _attemptsLeft.value = 3
+        _locked.value = List(5) { false }
     }
 
     fun scoreOnes(currentDiceValues: IntArray): Int? {

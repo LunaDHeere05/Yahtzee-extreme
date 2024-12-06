@@ -58,53 +58,69 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
+        gameViewModel.scores.observe(this) { scores ->
+            updateScoreboard(scores)
+        }
 
         updateDiceImages()
         updateRollInfo()
 
         binding.Ones.setOnClickListener {
             gameViewModel.doScore("ones", currentDiceValues)
+            resetForNewTurn()
         }
         binding.Twos.setOnClickListener {
             gameViewModel.doScore("twos", currentDiceValues)
+            resetForNewTurn()
         }
         binding.Threes.setOnClickListener {
             gameViewModel.doScore("threes", currentDiceValues)
+            resetForNewTurn()
         }
         binding.Fours.setOnClickListener {
             gameViewModel.doScore("fours", currentDiceValues)
+            resetForNewTurn()
         }
         binding.Fives.setOnClickListener {
             gameViewModel.doScore("fives", currentDiceValues)
+            resetForNewTurn()
         }
         binding.Sixes.setOnClickListener {
             gameViewModel.doScore("sixes", currentDiceValues)
+            resetForNewTurn()
         }
         binding.ThreeOfKind.setOnClickListener{
             gameViewModel.doScore("threeOfKind", currentDiceValues)
+            resetForNewTurn()
         }
         binding.FourOfKind.setOnClickListener{
             gameViewModel.doScore("fourOfKind", currentDiceValues)
+            resetForNewTurn()
         }
 
         binding.FullHouse.setOnClickListener{
             gameViewModel.doScore("fullHouse", currentDiceValues)
+            resetForNewTurn()
         }
 
         binding.SmallStraight.setOnClickListener{
             gameViewModel.doScore("smallStraight", currentDiceValues)
+            resetForNewTurn()
         }
 
         binding.LargeStraight.setOnClickListener{
             gameViewModel.doScore("largeStraight", currentDiceValues)
+            resetForNewTurn()
         }
 
         binding.Chance.setOnClickListener{
             gameViewModel.doScore("chance", currentDiceValues)
+            resetForNewTurn()
         }
 
         binding.Yahtzee.setOnClickListener{
             gameViewModel.doScore("yahtzee", currentDiceValues)
+            resetForNewTurn()
         }
 
         binding.shakeToRollButton.setOnClickListener { //momenteel click listener wnt moet nog uitzoeken hoe ik da een shake ding maak
@@ -253,6 +269,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     }
 
+    //als ik gescoord heb moet er een nieuwe ronde starten
+
+    private fun resetForNewTurn() {
+        gameViewModel.resetGameState()
+        attemptsleft = 3 // Reset attempts for the new turn
+        updateRollInfo()
+        updateDiceImages()
+    }
 
 }
 
