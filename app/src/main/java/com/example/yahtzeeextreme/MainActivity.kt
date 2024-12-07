@@ -12,10 +12,9 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.widget.Toast
 
 class MainActivity : ComponentActivity(), SensorEventListener {
-
-
     private val gameViewModel: YahtzeeGameViewModel by viewModels()
 
     private val diceImages = arrayOf(
@@ -59,11 +58,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
-    private var lastUpdate: Long = 0
+    private var lastUpdate: Long = 500
     private var last_x: Float = 0f
     private var last_y: Float = 0f
     private var last_z: Float = 0f
-    private val SHAKE_THRESHOLD = 1500
+    private val SHAKE_THRESHOLD = 200
+
+    private var currentRound = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,7 +146,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             resetForNewTurn()
         }
 
-        binding.shakeToRollButton.setOnClickListener { //momenteel click listener wnt moet nog uitzoeken hoe ik da een shake ding maak
+        binding.shakeToRollButton.setOnClickListener { //btn voor het vergemakkelijken van de tests
             if (attemptsleft > 0) {
                 rollDice()
                 attemptsleft--
@@ -163,7 +165,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     //shake to roll
     override fun onResume() {
         super.onResume()
-        // Register the sensor listener
         accelerometer?.let { acc ->
             sensorManager.registerListener(this, acc, SensorManager.SENSOR_DELAY_NORMAL)
         }
@@ -171,7 +172,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onPause() {
         super.onPause()
-        // Unregister the sensor listener
         sensorManager.unregisterListener(this)
     }
 
@@ -183,9 +183,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val y = event.values[1]
             val z = event.values[2]
             val curTime = System.currentTimeMillis()
-
-            // Only allow one update every 100ms
-            if ((curTime - lastUpdate) > 100) {
+            if ((curTime - lastUpdate) > 500) {
                 val diffTime = (curTime - lastUpdate)
                 lastUpdate = curTime
 
@@ -222,6 +220,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         lockedDice.fill(false); //dit zorgt ervoor dat telkens als er gerollt wordt dat het ni meer lockt is.
                                         //bij elke roll moet je dus opnieuw locked dice aangeven.
         updateDiceImages()
+
+        if (Random.nextBoolean()) {
+            activateRandomRule()
+        }
     }
 
     private fun updateDiceImages() {
@@ -233,7 +235,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     private fun updateRollInfo() {
-        // Update the roll info text
         binding.rollInfo.text = "You have $attemptsleft rolling attempts left!"
         binding.shakeToRollButton.isEnabled = attemptsleft > 0
         toggleScoreButtons(attemptsleft == 0)
@@ -256,7 +257,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-
+    fun adjustScore(points: Int) {
+        val currentScore = binding.highScore.text.toString().toIntOrNull() ?:0
+        val newScore = currentScore + points
+        binding.highScore.text = newScore.toString()
+    }
 
     private fun updateScoreboard(scores: Map<String, Int?>) {
         val onesScore = scores["ones"] ?: 0
@@ -304,6 +309,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     //als ik gescoord heb moet er een nieuwe ronde starten
 
     private fun resetForNewTurn() {
+        currentRound++
         gameViewModel.resetGameState()
         attemptsleft = 3
         updateRollInfo()
@@ -312,6 +318,111 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         rollDice()
         updateHighScore()
     }
+
+
+    //extreme rules
+
+    //gain points
+    private fun wizardsFavour() {
+        if (currentDiceValues.all { it % 2 == 0 }) {
+            val toast = Toast.makeText(
+                this,
+                "A wizard bestows you with 7 bonus points for your exceptional symmetry!",
+                Toast.LENGTH_LONG
+            )
+            toast.show()
+            adjustScore(7)
+        }
+    }
+
+
+    private fun santasGift() {
+        adjustScore(15) // Add 15 points
+        Toast.makeText(
+            this,
+            "Santa has bestowed you a gift! You gain 15 points!",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private fun ifrit(currentScore: Int) {
+        adjustScore(currentScore)
+        Toast.makeText(
+            this,
+            "Ifrit blessed you with his presence and doubled your score !",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+
+    //lose points
+
+    private fun chocobo(){
+        adjustScore(-20)
+        Toast.makeText(
+            this,
+            "wow there! a chocobo just stole 20 points and ran away !",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private fun potion(){
+        diceValues.shuffle()
+        for(i in diceValues.indices){
+            currentDiceValues[i] = diceValues[i]
+        }
+        updateDiceImages()
+
+        Toast.makeText(
+            this,
+            "A witch's potion messed up your dice! They get all mixed up!",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+
+    private fun shiva() {
+        attemptsleft = 0
+        lockedDice.fill(true)
+        updateRollInfo()
+        updateDiceImages()
+
+        Toast.makeText(
+            this,
+            "Shiva's icy touch has frozen all your dice! No more rolls this round.",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private val rules = listOf(
+        ::wizardsFavour,
+        ::santasGift,
+        { ifrit(binding.highScore.text.toString().toIntOrNull() ?: 0) },
+        ::chocobo,
+        ::potion,
+        ::shiva
+    )
+    private val usedRules = mutableSetOf<() -> Unit>()
+    private var rulesActivated = 0
+    private val maxRulesPerGame = 3
+
+    private fun activateRandomRule() {
+        if (rulesActivated >= maxRulesPerGame || currentRound <= 1) return
+
+        val activationChance = 0.2
+        if (Random.nextDouble() > activationChance) return
+
+        val unusedRules = rules.filterNot { usedRules.contains(it) }
+        if (unusedRules.isNotEmpty()) {
+            val selectedRule = unusedRules.random()
+            usedRules.add(selectedRule)
+            rulesActivated++
+            selectedRule()
+        }
+    }
+
+
+
 
 }
 

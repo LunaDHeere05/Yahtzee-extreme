@@ -1,6 +1,7 @@
 package com.example.yahtzeeextreme
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -80,7 +81,7 @@ class YahtzeeGameViewModel : ViewModel() {
         _locked.value = List(5) { false }
     }
 
-    fun scoreOnes(currentDiceValues: IntArray): Int? {
+    fun scoreOnes(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("ones") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 1)
             val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
@@ -93,7 +94,7 @@ class YahtzeeGameViewModel : ViewModel() {
         }
     }
 
-    fun scoreTwos(currentDiceValues: IntArray): Int?{
+    private fun scoreTwos(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("twos") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 2)
             val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
@@ -104,7 +105,7 @@ class YahtzeeGameViewModel : ViewModel() {
             return 0
         }
     }
-    fun scoreThrees(currentDiceValues: IntArray): Int?{
+    private fun scoreThrees(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("threes") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 3)
             val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
@@ -115,7 +116,7 @@ class YahtzeeGameViewModel : ViewModel() {
             return 0
         }
     }
-    fun scoreFours(currentDiceValues: IntArray): Int?{
+    private fun scoreFours(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("fours") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 4)
             val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
@@ -126,7 +127,7 @@ class YahtzeeGameViewModel : ViewModel() {
             return 0
         }
     }
-    fun scoreFives(currentDiceValues: IntArray): Int?{
+    private fun scoreFives(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("fives") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 5)
             val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
@@ -137,7 +138,7 @@ class YahtzeeGameViewModel : ViewModel() {
             return 0
         }
     }
-    fun scoreSixes(currentDiceValues: IntArray): Int?{
+    private fun scoreSixes(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("sixes") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 6)
             val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
@@ -149,9 +150,6 @@ class YahtzeeGameViewModel : ViewModel() {
         }
     }
 
-//    private fun scoreSpecificNumber(currentDiceValues: IntArray, number: Int): Int {
-//        return currentDiceValues.count { it == number } * number
-//    }
 
     private fun hasNOfAKind(currentDiceValues: IntArray, n: Int): Boolean {
         val counts = currentDiceValues.toList().groupingBy{ it }.eachCount()
@@ -159,19 +157,14 @@ class YahtzeeGameViewModel : ViewModel() {
     }
 
 
-    private fun scoreThreeOfAKind(currentDiceValues: IntArray): Int? {
-        // Check if the score for "ThreeOfKind" is already set
+    private fun scoreThreeOfAKind(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("ThreeOfKind") == null) {
-            // Check if the dice roll has three of a kind
             if (hasNOfAKind(currentDiceValues, 3)) {
-                // Group dice by value and count occurrences
                 val counts = currentDiceValues.toList().groupingBy { it }.eachCount()
 
-                // Find the value with at least three occurrences and calculate the sum
                 val threeOfKindValue = counts.filter { it.value >= 3 }.keys.firstOrNull()
                 val scoreRolled = threeOfKindValue?.let { it * 3 } ?: 0
 
-                // Update the scoreboard
                 val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
                 currentScores["ThreeOfKind"] = scoreRolled
                 _scoreboard.value = currentScores
@@ -182,19 +175,14 @@ class YahtzeeGameViewModel : ViewModel() {
         return 0
     }
 
-private fun scoreFourOfAKind(currentDiceValues: IntArray): Int? {
-        // Check if the score for "ThreeOfKind" is already set
+private fun scoreFourOfAKind(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("ThreeOfKind") == null) {
-            // Check if the dice roll has three of a kind
             if (hasNOfAKind(currentDiceValues, 4)) {
-                // Group dice by value and count occurrences
                 val counts = currentDiceValues.toList().groupingBy { it }.eachCount()
 
-                // Find the value with at least three occurrences and calculate the sum
                 val threeOfKindValue = counts.filter { it.value >= 4 }.keys.firstOrNull()
                 val scoreRolled = threeOfKindValue?.let { it * 4 } ?: 0
 
-                // Update the scoreboard
                 val currentScores = _scoreboard.value?.toMutableMap() ?: mutableMapOf()
                 currentScores["ThreeOfKind"] = scoreRolled
                 _scoreboard.value = currentScores
@@ -204,23 +192,19 @@ private fun scoreFourOfAKind(currentDiceValues: IntArray): Int? {
         }
         return 0
     }
-    private fun scoreYahtzee(currentDiceValues: IntArray): Int? {
-        //als er 5 dezelfde nummers gegooid worden
-        return if (hasNOfAKind(currentDiceValues, 5)) {
+    private fun scoreYahtzee(currentDiceValues: IntArray): Int {
+        return if (hasNOfAKind(currentDiceValues, 5) &&  _scoreboard.value?.get("Yahtzee") == null){
             50
         } else {
             0
         }
     }
 
-    private fun scoreFullHouse(currentDiceValues: IntArray): Int? {
-        // Group dice values by occurrence and count each
+    private fun scoreFullHouse(currentDiceValues: IntArray): Int {
         val counts = currentDiceValues.toList().groupingBy { it }.eachCount()
-
-        // Check if there are exactly two different values with counts 3 and 2
-        return if (counts.size == 2) {
+        return if (counts.size == 2 && _scoreboard.value?.get("Chance") == null) {
             when {
-                counts.any { it.value == 3 } && counts.any { it.value == 2 } -> 25 // Full house score
+                counts.any { it.value == 3 } && counts.any { it.value == 2 } -> 25
                 else -> 0
             }
         } else {
@@ -228,13 +212,10 @@ private fun scoreFourOfAKind(currentDiceValues: IntArray): Int? {
         }
     }
 
-    private fun scoreSmallStraight(currentDiceValues: IntArray): Int? {
-
-        val uniqueValues = currentDiceValues
-
-        return if ((1 in uniqueValues && 2 in uniqueValues && 3 in uniqueValues && 4 in uniqueValues) ||
-            (2 in uniqueValues && 3 in uniqueValues && 4 in uniqueValues && 5 in uniqueValues) ||
-            (3 in uniqueValues && 4 in uniqueValues && 5 in uniqueValues && 6 in uniqueValues)) {
+    private fun scoreSmallStraight(currentDiceValues: IntArray): Int {
+        return if ((1 in currentDiceValues && 2 in currentDiceValues && 3 in currentDiceValues && 4 in currentDiceValues) ||
+            (2 in currentDiceValues && 3 in currentDiceValues && 4 in currentDiceValues && 5 in currentDiceValues) ||
+            (3 in currentDiceValues && 4 in currentDiceValues && 5 in currentDiceValues && 6 in currentDiceValues)) {
             30
         } else {
             0
@@ -242,10 +223,9 @@ private fun scoreFourOfAKind(currentDiceValues: IntArray): Int? {
     }
 
 
-    private fun scoreLargeStraight(currentDiceValues: IntArray): Int? {
-        val uniqueValues = currentDiceValues
-        return if ((1 in uniqueValues && 2 in uniqueValues && 3 in uniqueValues && 4 in uniqueValues && 5 in uniqueValues) ||
-            (2 in uniqueValues && 3 in uniqueValues && 4 in uniqueValues && 5 in uniqueValues && 6 in uniqueValues)) {
+    private fun scoreLargeStraight(currentDiceValues: IntArray): Int {
+        return if ((1 in currentDiceValues && 2 in currentDiceValues && 3 in currentDiceValues && 4 in currentDiceValues && 5 in currentDiceValues) ||
+            (2 in currentDiceValues && 3 in currentDiceValues && 4 in currentDiceValues && 5 in currentDiceValues && 6 in currentDiceValues)) {
             40
         } else {
             0
@@ -253,21 +233,12 @@ private fun scoreFourOfAKind(currentDiceValues: IntArray): Int? {
     }
 
     private fun scoreChance(currentDiceValues: IntArray): Int {
-        // Check if the score for "ThreeOfKind" is not already set
         if (_scoreboard.value?.get("chance") == null) {
-            return currentDiceValues.sum() // Return the sum of all dice
+            return currentDiceValues.sum()
         } else {
-            return 0 // Return 0 if "ThreeOfKind" is already scored
+            return 0
         }
     }
-
-
-
-    //extreme rules
-
-    //gain points
-
-    //lose points
 
 
 }
