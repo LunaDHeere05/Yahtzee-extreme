@@ -9,12 +9,14 @@ import kotlin.random.Random
 class YahtzeeGameViewModel : ViewModel() {
 
 
+    private val _highScore = MutableLiveData<Int>()
+    val highScore: LiveData<Int> get() = _highScore
+
     private val _locked =
         MutableLiveData<List<Boolean>>() //dit is dus om de dobbelstenen te laten hoe ze zijn als alle beurten om zijn om te rerollen
     val locked: LiveData<List<Boolean>> get() = _locked
 
-    private val _attemptsLeft = MutableLiveData<Int>()
-    val rollsLeft: LiveData<Int> get() = _attemptsLeft //om dus te zien hoe vaak er nog gerolt mag worde
+    private val _attemptsLeft = MutableLiveData<Int>() //om dus te zien hoe vaak er nog gerolt mag worde
 
     private val _scoreboard = MutableLiveData<Map<String, Int?>>()
     val scores: LiveData<Map<String, Int?>> get() = _scoreboard // dus voor op de score op te tellen
@@ -49,6 +51,7 @@ class YahtzeeGameViewModel : ViewModel() {
             "ones" -> scoreOnes(currentDiceValues)
             "twos" -> scoreTwos(currentDiceValues)
             "threes" -> scoreThrees(currentDiceValues)
+
             "fours" -> scoreFours(currentDiceValues)
             "fives" -> scoreFives(currentDiceValues)
             "sixes" -> scoreSixes(currentDiceValues)
@@ -258,6 +261,13 @@ private fun scoreFourOfAKind(currentDiceValues: IntArray): Int? {
         }
     }
 
+
+
+    //extreme rules
+
+    //gain points
+
+    //lose points
 
 
 }

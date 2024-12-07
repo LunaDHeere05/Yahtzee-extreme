@@ -32,6 +32,22 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         R.drawable.dobbelsteenlocked5,
         R.drawable.dobbelsteenlocked6,
     )
+    private fun toggleScoreButtons(enable: Boolean) {
+        binding.Ones.isEnabled = enable
+        binding.Twos.isEnabled = enable
+        binding.Threes.isEnabled = enable
+        binding.Fours.isEnabled = enable
+        binding.Fives.isEnabled = enable
+        binding.Sixes.isEnabled = enable
+        binding.ThreeOfKind.isEnabled = enable
+        binding.FourOfKind.isEnabled = enable
+        binding.FullHouse.isEnabled = enable
+        binding.SmallStraight.isEnabled = enable
+        binding.LargeStraight.isEnabled = enable
+        binding.Chance.isEnabled = enable
+        binding.Yahtzee.isEnabled = enable
+    }
+
     private var diceValues = IntArray(5) { Random.nextInt(1,7) }
     private var attemptsleft = 3
     private var lockedDice = BooleanArray(5) { false }
@@ -61,6 +77,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         gameViewModel.scores.observe(this) { scores ->
             updateScoreboard(scores)
         }
+
+        gameViewModel.highScore.observe(this) { highScore ->
+            binding.highScore.text = highScore.toString()
+        }
+
 
         updateDiceImages()
         updateRollInfo()
@@ -215,6 +236,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         // Update the roll info text
         binding.rollInfo.text = "You have $attemptsleft rolling attempts left!"
         binding.shakeToRollButton.isEnabled = attemptsleft > 0
+        toggleScoreButtons(attemptsleft == 0)
     }
 
     private fun toggleDiceLock(index: Int, diceImageView: ImageView) {
@@ -225,6 +247,16 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             diceImageView.setImageResource(diceImages[diceValues[index] - 1])
         }
     }
+    private fun updateHighScore() {
+        val scores = gameViewModel.scores.value?.values
+        val newScore = scores?.filterNotNull()?.sum() ?: 0
+        val highScore = binding.highScore.text.toString().toIntOrNull() ?: 0
+        if (newScore > highScore) {
+            binding.highScore.text = newScore.toString()
+        }
+    }
+
+
 
     private fun updateScoreboard(scores: Map<String, Int?>) {
         val onesScore = scores["ones"] ?: 0
@@ -273,9 +305,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     private fun resetForNewTurn() {
         gameViewModel.resetGameState()
-        attemptsleft = 3 // Reset attempts for the new turn
+        attemptsleft = 3
         updateRollInfo()
         updateDiceImages()
+        toggleScoreButtons(false)
+        rollDice()
+        updateHighScore()
     }
 
 }
