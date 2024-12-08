@@ -163,6 +163,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
         }
 
+
         binding.diceTopLeft.setOnClickListener { toggleDiceLock(0, binding.diceTopLeft) }
         binding.diceTopRight.setOnClickListener { toggleDiceLock(1, binding.diceTopRight) }
         binding.diceMiddle.setOnClickListener { toggleDiceLock(2, binding.diceMiddle) }
