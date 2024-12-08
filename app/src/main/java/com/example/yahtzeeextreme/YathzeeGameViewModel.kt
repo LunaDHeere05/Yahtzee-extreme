@@ -9,7 +9,6 @@ import kotlin.random.Random
 
 class YahtzeeGameViewModel : ViewModel() {
 
-
     private val _highScore = MutableLiveData<Int>()
     val highScore: LiveData<Int> get() = _highScore
 
@@ -52,7 +51,6 @@ class YahtzeeGameViewModel : ViewModel() {
             "ones" -> scoreOnes(currentDiceValues)
             "twos" -> scoreTwos(currentDiceValues)
             "threes" -> scoreThrees(currentDiceValues)
-
             "fours" -> scoreFours(currentDiceValues)
             "fives" -> scoreFives(currentDiceValues)
             "sixes" -> scoreSixes(currentDiceValues)
@@ -220,10 +218,11 @@ private fun scoreFourOfAKind(currentDiceValues: IntArray): Int {
 
     private fun scoreFullHouse(currentDiceValues: IntArray): Int {
         val counts = currentDiceValues.toList().groupingBy { it }.eachCount()
-        return if (counts.size == 2 && _scoreboard.value?.get("Chance") == null) {
-            when {
-                counts.any { it.value == 3 } && counts.any { it.value == 2 } -> 25
-                else -> 0
+        return if (counts.size == 2) {
+            if (counts.any { it.value == 3 } && counts.any { it.value == 2 }) {
+                25
+            } else {
+                0
             }
         } else {
             0

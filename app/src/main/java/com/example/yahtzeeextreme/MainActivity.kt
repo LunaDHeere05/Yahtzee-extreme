@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
-    private var lastUpdate: Long = 500
+    private var lastUpdate: Long = 1500
     private var last_x: Float = 0f
     private var last_y: Float = 0f
     private var last_z: Float = 0f
@@ -160,7 +160,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             attemptsleft = 3
             binding.highScore.text = "0"
             gameViewModel.resetScore()
-
         }
 
 
@@ -184,8 +183,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         super.onPause()
         sensorManager.unregisterListener(this)
     }
-
-
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
