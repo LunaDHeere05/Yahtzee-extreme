@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var attemptsleft = 3
     private var lockedDice = BooleanArray(5) { false }
 
-    private val currentDiceValues = IntArray(5)
+    private var currentDiceValues = IntArray(5)
     private lateinit var binding: ActivityMainBinding
 
     //shake to roll
@@ -152,6 +152,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 attemptsleft--
                 updateRollInfo()
             }
+        }
+
+        binding.resetGame.setOnClickListener {
+            resetForNewTurn()
+            currentRound = 0
+            attemptsleft = 3
+            binding.highScore.text = "0"
+            gameViewModel.resetScore()
+
         }
 
         binding.diceTopLeft.setOnClickListener { toggleDiceLock(0, binding.diceTopLeft) }

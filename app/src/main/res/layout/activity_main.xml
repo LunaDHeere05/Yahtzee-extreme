@@ -61,27 +61,17 @@
         android:background="#B8BABABA"
         >
 
-        <TableRow>
-            <TextView
-                android:layout_width="215dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="Player 1"
-                android:textColor="#000000"
-                android:background="#40000000"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="195dp"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="Player 2"
-                android:gravity="center"
-                android:textColor="#000000" />
-        </TableRow>
-
     </TableLayout>
+
+    <Button
+        android:id="@+id/resetGame"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="5dp"
+        android:text="reset game"
+        android:textSize="15sp"
+        />
 
     <TextView
         android:id="@+id/rollInfo"

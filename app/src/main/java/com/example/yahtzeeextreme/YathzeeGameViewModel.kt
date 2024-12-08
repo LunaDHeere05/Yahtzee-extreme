@@ -81,6 +81,24 @@ class YahtzeeGameViewModel : ViewModel() {
         _locked.value = List(5) { false }
     }
 
+    fun resetScore(){
+            _scoreboard.value = mapOf(
+                "ones" to null,
+                "twos" to null,
+                "threes" to null,
+                "fours" to null,
+                "fives" to null,
+                "sixes" to null,
+                "threeOfKind" to null,
+                "fourOfKind" to null,
+                "fullHouse" to null,
+                "smallStraight" to null,
+                "largeStraight" to null,
+                "chance" to null,
+                "yahtzee" to null
+            )
+    }
+
     fun scoreOnes(currentDiceValues: IntArray): Int {
         if (_scoreboard.value?.get("ones") == null) {
             val scoreNeeded = scoreSpecificNumber(currentDiceValues, 1)
