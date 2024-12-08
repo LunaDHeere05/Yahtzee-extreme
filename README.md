@@ -1,6 +1,10 @@
 # **Yahtzee Extreme**
 
 ## **Technologies and Libraries**
+
+### **Android Studio**
+- Used as IDE for this project.
+
 ### **Jetpack Libraries**
 - **LiveData**: Used for observing and managing UI-related data.
     - `androidx.lifecycle.LiveData`
